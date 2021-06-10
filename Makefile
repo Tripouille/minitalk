@@ -1,6 +1,6 @@
 BINS		= server client
 SERVER_SRCS	= $(addprefix srcs/, server.c)
-CLIENT_SRCS	= $(addprefix srcs/, client.c)
+CLIENT_SRCS	= $(addprefix srcs/, client.c utils.c)
 SERVER_OBJS	= $(SERVER_SRCS:srcs/%.c=objs/%.o)
 CLIENT_OBJS	= $(CLIENT_SRCS:srcs/%.c=objs/%.o)
 DEPS		= $(SERVER_SRCS:srcs/%.c=deps/%.d) $(CLIENT_SRCS:srcs/%.c=deps/%.d)
