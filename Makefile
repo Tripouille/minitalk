@@ -1,5 +1,5 @@
 BINS		= server client
-SERVER_SRCS	= $(addprefix srcs/, server.c)
+SERVER_SRCS	= $(addprefix srcs/, server.c utils.c)
 CLIENT_SRCS	= $(addprefix srcs/, client.c utils.c)
 SERVER_OBJS	= $(SERVER_SRCS:srcs/%.c=objs/%.o)
 CLIENT_OBJS	= $(CLIENT_SRCS:srcs/%.c=objs/%.o)
@@ -11,7 +11,7 @@ DFLAGS	= -MT $@ -MMD -MP -MF deps/$*.d
 
 all: $(BINS)
 
-$(SERVER_OBJS) $(CLIENT_OBJS): objs/%.o: srcs/%.c
+objs/%.o: srcs/%.c
 	$(CC) $(CFLAGS) $(DFLAGS) -c $< -o $@
 
 server: $(SERVER_OBJS)

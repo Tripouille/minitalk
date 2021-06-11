@@ -16,6 +16,4 @@ typedef	struct	s_server
 	bool	waiting_for_signal;
 }				t_server;
 
-t_server server;
-
 #endif

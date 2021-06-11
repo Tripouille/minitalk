@@ -9,5 +9,6 @@ void print_and_exit(char const * msg);
 size_t slen(char const * s);
 void prints(int fd, char const * s);
 int parse_pid(char const * s);
+void print_pid(int pid);
 
 #endif

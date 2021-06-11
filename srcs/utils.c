@@ -35,3 +35,13 @@ int parse_pid(char const * s)
 		print_and_exit("Error: Invalid PID");
 	return (pid);
 }
+
+void print_pid(int pid)
+{
+	char current_digit;
+
+	if (pid >= 10)
+		print_pid(pid / 10);
+	current_digit = pid % 10 + '0';
+	write(1, &current_digit, 1);
+}
