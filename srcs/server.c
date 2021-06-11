@@ -2,9 +2,8 @@
 
 t_message g_message;
 
-static void reset_message(void)
+static void reset_message(int client_pid)
 {
-	g_message.waiting_for_connection = true;
 	g_message.waiting_for_size = true;
 	g_message.current_char_i = 0;
 	free(g_message.buffer);
@@ -12,14 +11,15 @@ static void reset_message(void)
 	g_message.buffer_i = 0;
 	g_message.size = 0;
 	g_message.size_i = 0;
+	g_message.client_pid = client_pid;
 }
 
 static void parse_message_size(bool current_bit_is_true)
 {
-	size_t	i;
+	int		i;
 
 	if (current_bit_is_true)
-		g_message.size = g_message.size | 1 << g_message.size_i;
+		g_message.size |= 1 << g_message.size_i;
 	++g_message.size_i;
 	if (g_message.size_i == sizeof(int) * 8)
 	{
@@ -34,15 +34,14 @@ static void parse_message_size(bool current_bit_is_true)
 				g_message.buffer[i++] = 0;
 		}
 		else
-			reset_message();
+			reset_message(0);
 	}
 }
 
 static void parse_message(bool current_bit_is_true)
 {
 	if (current_bit_is_true)
-		g_message.buffer[g_message.buffer_i] = g_message.buffer[g_message.buffer_i] |
-		1 << g_message.current_char_i;
+		g_message.buffer[g_message.buffer_i] |= 1 << g_message.current_char_i;
 	++g_message.current_char_i;
 	if (g_message.current_char_i == 8)
 	{
@@ -52,7 +51,7 @@ static void parse_message(bool current_bit_is_true)
 		{
 			write(1, g_message.buffer, g_message.size);
 			write(1, "\n", 1);
-			reset_message();
+			reset_message(0);
 		}
 	}
 }
@@ -61,12 +60,7 @@ static void handle_message(int signal, siginfo_t * infos, void * ucontext_t)
 {
 	(void)ucontext_t;
 	if (g_message.client_pid != infos->si_pid)
-		reset_message();
-	if (g_message.waiting_for_connection)
-	{
-		g_message.waiting_for_connection = false;
-		g_message.client_pid = infos->si_pid;
-	}
+		reset_message(infos->si_pid);
 	if (g_message.waiting_for_size)
 		parse_message_size(signal == SIGUSR1);
 	else
