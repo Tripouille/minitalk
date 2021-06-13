@@ -15,7 +15,7 @@ static void	send_signal(int signal)
 		usleep(CONFIRMATION_PERIOD_US);
 	if (g_server.waiting_for_signal)
 		print_and_exit("Error: Client didn't receive confirmation in time");
-	usleep(100);
+	usleep(DELAY_BETWEEN_SIGNALS);
 }
 
 static void	signal_received(int signal, siginfo_t *infos, void *ucontext)
