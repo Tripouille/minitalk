@@ -23,7 +23,7 @@ static void	parse_message_size(bool current_bit_is_true)
 	++g_message.size_i;
 	if (g_message.size_i == sizeof(int) * 8)
 	{
-		if (g_message.size)
+		if (g_message.size > 0)
 		{
 			g_message.waiting_for_size = false;
 			g_message.buffer = malloc(g_message.size);
@@ -59,6 +59,8 @@ static void	parse_message(bool current_bit_is_true)
 static void	handle_message(int signal, siginfo_t *infos, void *ucontext)
 {
 	(void)ucontext;
+	if (!infos->si_pid)
+		return ;
 	if (g_message.client_pid != infos->si_pid)
 		reset_message(infos->si_pid);
 	if (g_message.waiting_for_size)
@@ -75,6 +77,8 @@ int	main(void)
 	print_pid(getpid());
 	write(1, "\n", 1);
 	sigemptyset(&sa.sa_mask);
+	sigaddset(&sa.sa_mask, SIGUSR1);
+	sigaddset(&sa.sa_mask, SIGUSR2);
 	sa.sa_flags = SA_SIGINFO;
 	sa.sa_sigaction = handle_message;
 	sigaction(SIGUSR1, &sa, NULL);

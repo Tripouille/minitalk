@@ -14,7 +14,8 @@ static void	send_signal(int signal)
 		&& i++ < CONFIRMATION_LIMIT)
 		usleep(CONFIRMATION_PERIOD_US);
 	if (g_server.waiting_for_signal)
-		print_and_exit("Error: Client doesn't received confirmation in time");
+		print_and_exit("Error: Client didn't receive confirmation in time");
+	usleep(100);
 }
 
 static void	signal_received(int signal, siginfo_t *infos, void *ucontext)
@@ -25,17 +26,15 @@ static void	signal_received(int signal, siginfo_t *infos, void *ucontext)
 		g_server.waiting_for_signal = false;
 }
 
-static void	send_message(char const *msg)
+static void	send_message(char const *msg, int msg_size)
 {
 	size_t	i;
 	size_t	msg_i;
-	int		size;
 
 	i = -1;
-	size = slen(msg);
 	while (++i < sizeof(int) * 8)
 	{
-		if (size & 1 << i)
+		if (msg_size & 1 << i)
 			send_signal(SIGUSR1);
 		else
 			send_signal(SIGUSR2);
@@ -57,6 +56,7 @@ static void	send_message(char const *msg)
 int	main(int ac, char **av)
 {
 	struct sigaction	sa;
+	int					msg_size;
 
 	if (ac != 3)
 		print_and_exit("Usage ./client PID MESSAGE");
@@ -65,6 +65,8 @@ int	main(int ac, char **av)
 	sa.sa_flags = SA_SIGINFO;
 	sa.sa_sigaction = signal_received;
 	sigaction(SIGUSR1, &sa, NULL);
-	send_message(av[2]);
+	msg_size = slen(av[2]);
+	if (msg_size)
+		send_message(av[2], msg_size);
 	return (0);
 }
