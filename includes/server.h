@@ -6,11 +6,11 @@
 # include <stdlib.h>
 # include "utils.h"
 
-typedef struct	s_message
+typedef struct s_message
 {
 	bool	waiting_for_size;
 	int		current_char_i;
-	char *	buffer;
+	char	*buffer;
 	int		buffer_i;
 	int		size;
 	int		size_i;

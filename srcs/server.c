@@ -1,8 +1,8 @@
 #include "server.h"
 
-t_message g_message;
+t_message	g_message;
 
-static void reset_message(int client_pid)
+static void	reset_message(int client_pid)
 {
 	g_message.waiting_for_size = true;
 	g_message.current_char_i = 0;
@@ -14,7 +14,7 @@ static void reset_message(int client_pid)
 	g_message.client_pid = client_pid;
 }
 
-static void parse_message_size(bool current_bit_is_true)
+static void	parse_message_size(bool current_bit_is_true)
 {
 	int		i;
 
@@ -38,7 +38,7 @@ static void parse_message_size(bool current_bit_is_true)
 	}
 }
 
-static void parse_message(bool current_bit_is_true)
+static void	parse_message(bool current_bit_is_true)
 {
 	if (current_bit_is_true)
 		g_message.buffer[g_message.buffer_i] |= 1 << g_message.current_char_i;
@@ -56,9 +56,9 @@ static void parse_message(bool current_bit_is_true)
 	}
 }
 
-static void handle_message(int signal, siginfo_t * infos, void * ucontext_t)
+static void	handle_message(int signal, siginfo_t *infos, void *ucontext)
 {
-	(void)ucontext_t;
+	(void)ucontext;
 	if (g_message.client_pid != infos->si_pid)
 		reset_message(infos->si_pid);
 	if (g_message.waiting_for_size)
@@ -68,9 +68,9 @@ static void handle_message(int signal, siginfo_t * infos, void * ucontext_t)
 	kill(infos->si_pid, SIGUSR1);
 }
 
-int main(void)
+int	main(void)
 {
-	struct sigaction sa;
+	struct sigaction	sa;
 
 	print_pid(getpid());
 	write(1, "\n", 1);
