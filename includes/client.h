@@ -6,9 +6,8 @@
 # include <unistd.h>
 # include "utils.h"
 
-# define CONFIRMATION_PERIOD_US 1000
-# define CONFIRMATION_LIMIT 10
-# define DELAY_BETWEEN_SIGNALS 100
+# define CONFIRMATION_PERIOD 1000
+# define DELAY_BETWEEN_SIGNALS 50
 
 typedef struct s_server
 {

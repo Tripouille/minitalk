@@ -4,15 +4,10 @@ t_server	g_server;
 
 static void	send_signal(int signal)
 {
-	size_t	i;
-
 	g_server.waiting_for_signal = true;
 	if (kill(g_server.pid, signal) != 0)
 		print_and_exit("Error: Can't contact server, please check the PID");
-	i = 0;
-	while (g_server.waiting_for_signal
-		&& i++ < CONFIRMATION_LIMIT)
-		usleep(CONFIRMATION_PERIOD_US);
+	usleep(CONFIRMATION_PERIOD);
 	if (g_server.waiting_for_signal)
 		print_and_exit("Error: Client didn't receive confirmation in time");
 	usleep(DELAY_BETWEEN_SIGNALS);
